@@ -71,7 +71,7 @@ def get_aptitude(user_id, aptitude):
             score = char[13]
         case 'Aura':
             score = char[14]
-    return (char[1], score)
+    return (char[1], char[9], score)
 
 def rank_up(user_id, might, deftness, grit, insight, aura):
     (conn, cur, char) = startup(user_id)
