@@ -17,6 +17,6 @@ def startup():
 
 def get_calling(calling, rank):
     (conn, cur) = startup()
-    info = cur.execute(f"SELECT * FROM callings WHERE name = '{calling}' AND rank = {rank}").fetchone()
+    info = cur.execute(f"SELECT might, deftness, grit, insight, aura FROM callings WHERE name = '{calling}' AND rank = {rank}").fetchone()
     conn.close()
     return info

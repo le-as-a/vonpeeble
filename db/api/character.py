@@ -1,6 +1,6 @@
 from sqlite3 import connect
 
-""" CREATE TABLE characers (
+""" CREATE TABLE characters (
     user_id INTEGER NOT NULL,
     name VARCHAR(255) NOT NULL,
     calling VARCHAR(255) NOT NULL,
