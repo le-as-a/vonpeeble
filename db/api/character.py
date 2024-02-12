@@ -107,4 +107,4 @@ def del_char(user_id):
     cur.execute(f"DELETE FROM characters WHERE user_id = {user_id}")
     conn.commit()
     conn.close()
-    return True
+    return char[1]
