@@ -1,5 +1,7 @@
 # Custom
 protected.py
+db/helper.py
+data.db
 
 # Editors
 .vscode/
