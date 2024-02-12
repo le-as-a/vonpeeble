@@ -1,8 +1,8 @@
-from discord import Intents, Option
+from discord import Intents, Option, Embed, Colour
 from discord.ext import commands
 from random import randint
 from protected import TOKEN, servers
-from logic import generate_stats
+from logic import generate_stats, customized
 from db.api.character import new_char, get_char, get_aptitude, rank_up, edit_char, del_char
 
 intents = Intents.default()
@@ -74,7 +74,7 @@ async def create(
     )
     size = 'Small' if species in ['Chib', 'Goblin'] else 'Large' if species in ['Gruun', 'Promethean'] else 'Medium'
     
-    if not image:
+    if not image or not image.startswith("https://"):
         image = "https://i.pinimg.com/736x/ef/8a/6e/ef8a6e9f16c80279e9ea3ed19fbe8df0.jpg"
     
     response = ''
@@ -131,7 +131,23 @@ async def profile(message):
         insight,
         aura
     ) = info
-    
+    (calling_url, calling_color) = customized(calling)
+    embed = Embed(
+        title="",
+        description=f"# {char_name.title()}\n## {species} {calling}, Rank {rank}",
+        color=Colour(int(calling_color, 16))
+    )
+    embed.set_image(url=img_url)
+    embed.set_thumbnail(url=calling_url)
+    stats = f"""**Might** {might}   
+    **Deftness** {deftness}     
+    **Grit** {grit}
+    **Insight** {insight}   
+    **Aura** {aura}"""
+    embed.add_field(name="Aptitude Scores", value=stats,inline=False)
+    await message.respond(embed=embed)
+    return
+
     
 
 bot.run(TOKEN)
