@@ -70,3 +70,5 @@ def customized(calling):
             url = "https://i.imgur.com/N1Zh5KB.png"
             color = '5d358f'
     return (url, color)
+
+

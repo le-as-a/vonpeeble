@@ -81,7 +81,7 @@ def rank_up(user_id, might, deftness, grit, insight, aura):
     cur.execute(f"UPDATE characters SET rank = rank + 1, might = {might}, deftness = {deftness}, grit = {grit}, insight = {insight}, aura = {aura} WHERE user_id = {user_id}")
     conn.commit()
     conn.close()
-    return True
+    return char[1]
 
 def edit_char(user_id, option, data):
     (conn, cur, char) = startup(user_id)

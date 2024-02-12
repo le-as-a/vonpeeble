@@ -4,6 +4,8 @@ from random import randint
 from protected import TOKEN, servers
 from logic import generate_stats, customized
 from db.api.character import new_char, get_char, get_aptitude, rank_up, edit_char, del_char
+from db.api.calling import get_calling
+from views.RankupView import RankupView
 
 intents = Intents.default()
 intents.message_content = True
@@ -112,7 +114,7 @@ async def profile(message):
     user_id = message.author.id
     info = get_char(user_id)
     if not info:
-        await message.respond("There was an error viewing your character. You can create one using `/create`!")
+        await message.respond("There was an error finding your character. Try creating one with `/create`!")
         return
     (
         userId,
@@ -159,6 +161,11 @@ async def check(
     reroll: Option(str, required=False, choices=['Edge', 'Snag']), #type: ignore
     bonus: Option(str, required=False, choices=['Minor Bonus', 'Minor Penalty', 'Major Bonus', 'Major Penalty']) #type:ignore
 ):
+    info = get_aptitude(user_id, aptitude)
+    if not info:
+        await message.respond("There was an error finding your character. Try creating one with `/create`!")
+        return
+    (char_name, img_url, score) = info
     roll1 = randint(1, 20)
     roll2 = randint(1, 20)
     chosen = roll1
@@ -167,7 +174,7 @@ async def check(
     total_rejected = roll2
     
     user_id = message.author.id
-    (char_name, img_url, score) = get_aptitude(user_id, aptitude)
+    
     altered_roll = ""
     
     if reroll and reroll == 'Edge':
@@ -206,10 +213,10 @@ async def check(
     else:
         altered_roll += "- no Bonus/Penalty"
     
-    result = "## Special Success!" if chosen == score else f"## {char_name} succeeded!" if total_chosen <= score else "... Failure."
-    total = f"{total_chosen} [{chosen} - 2]" if bonus == 'Minor Bonus' else f"{total_chosen} [{chosen} - 4]" if bonus == 'Major Bonus' else f"{total_chosen} [{chosen} + 2]" if bonus == 'Minor Penalty' else f"{total_chosen} [{chosen} + 4]"
+    result = f"## Special Success for {char_name}!" if chosen == score else f"## {char_name} succeeded!" if total_chosen <= score else "... Failure."
+    total = f"{total_chosen} ({chosen} - 2)" if bonus == 'Minor Bonus' else f"{total_chosen} ({chosen} - 4)" if bonus == 'Major Bonus' else f"{total_chosen} ({chosen} + 2)" if bonus == 'Minor Penalty' else f"{total_chosen} ({chosen} + 4)"
     desc = f"""## {aptitude} check
-    {altered_roll}\n# {total if bonus and result != "## Special Success!" else chosen} `vs` {score}\n{result}
+    {altered_roll}\n# {total if bonus and result != f"## Special Success for {char_name}!" else chosen} `vs` {score}\n{result}
     """
     embed = Embed(
         title="",
@@ -229,13 +236,17 @@ async def attack(
     bonus: Option(int, required=False, min_value=-5, max_value=15), #type:ignore
     reroll: Option(str, required=False, choices=['Edge', 'Snag']) #type:ignore
 ):
+    user_id = message.author.id
+    info = get_char(user_id)
+    if not info:
+        await message.respond("There was an error finding your character. Try creating one with `/create`!")
+        return
+    
     roll1 = randint(1, 20)
     roll2 = randint(1, 20)
     chosen = roll1
     rejected = roll2
     
-    user_id = message.author.id
-    info = get_char(user_id)
     char_name = info[1]
     img_url = info[9]
     
@@ -274,5 +285,56 @@ async def attack(
 )
 async def rankup(message):
     user_id = message.author.id
+    info = get_char(user_id)
+    if not info:
+        await message.respond("There was an error finding your character. Try creating one with `/create`!")
+        return
+    (
+        userId,
+        char_name,
+        calling,
+        rank,
+        species,
+        size,
+        good1,
+        good2,
+        bad,
+        img_url,
+        might,
+        deftness,
+        grit,
+        insight,
+        aura
+    ) = info
+    if rank == 10:
+        await message.respond("Your character is at the max rank already!")
+        return
+    (next_might, next_deftness, next_grit, next_insight, next_aura) = generate_stats(calling, rank+1, species, good1, good2, bad)
+    (url, color) = customized(calling)
+    desc = f"""## {char_name.title()}'s Rank Up
+### Current Scores
+{might} | {deftness} | {grit} | {insight} | {aura}
+### Next Scores
+{next_might} | {next_deftness} | {next_grit} | {next_insight} | {next_aura}"""
+    embed = Embed(
+        title="",
+        description=desc,
+        color=Colour(int(color, 16))
+    )
+    embed.set_thumbnail(url=url)
+    await message.respond(embed=embed, view=RankupView(
+        message, 
+        userId, 
+        char_name, 
+        rank, 
+        next_might, 
+        next_deftness, 
+        next_grit, 
+        next_insight, 
+        next_aura, 
+        url, 
+        color
+    ))
+
 
 bot.run(TOKEN)
