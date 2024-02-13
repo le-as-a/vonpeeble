@@ -36,7 +36,8 @@ async def create(
         'Murder Noble',
         'Sage',
         'Heretic'    
-    ]), # type: ignore
+    ],
+    description="Pick a calling from the list provided."), # type: ignore
     rank: Option(int, required=True, min_value=1, max_value=10), # type: ignore
     species: Option(str, required=True, choices=[
         'Human',
@@ -50,16 +51,20 @@ async def create(
         'Dwarf',
         'Elf',
         'Bio-Mechaonoid'  
-    ]), # type: ignore
+    ],
+    description="Pick a species to play from the list provided."), # type: ignore
     good_trait_1: Option(str, required=True, choices=[
         'Might', 'Deftness', 'Grit', 'Insight', 'Aura'    
-    ]), # type: ignore
+    ],
+    description="Add a +1 to which trait?"), # type: ignore
     good_trait_2: Option(str, required=True, choices=[
         'Might', 'Deftness', 'Grit', 'Insight', 'Aura'    
-    ]), # type: ignore
+    ],
+    description="Add a +1 to which trait?"), # type: ignore
     bad_trait: Option(str, required=True, choices=[
         'Might', 'Deftness', 'Grit', 'Insight', 'Aura'    
-    ]), # type: ignore
+    ],
+    description="Add a -1 to which trait?"), # type: ignore
     image: Option(str, required=False) # type: ignore
 ):
     user_id = message.author.id
@@ -160,9 +165,21 @@ async def profile(message):
 )
 async def check(
     message,
-    aptitude: Option(str, required=True, choices=['Might', 'Deftness', 'Grit', 'Insight', 'Aura']), #type:ignore
-    reroll: Option(str, required=False, choices=['Edge', 'Snag']), #type: ignore
-    bonus: Option(str, required=False, choices=['Minor Bonus', 'Minor Penalty', 'Major Bonus', 'Major Penalty']) #type:ignore
+    aptitude: Option(
+        str, required=True, 
+        choices=['Might', 'Deftness', 'Grit', 'Insight', 'Aura'],
+        description="Choose an aptitude to compare to this check!"
+    ), #type:ignore
+    reroll: Option(
+        str, required=False, 
+        choices=['Edge', 'Snag'],
+        description="Optionally include an Edge/Snag."
+    ), #type: ignore
+    bonus: Option(
+        str, required=False, 
+        choices=['Minor Bonus', 'Minor Penalty', 'Major Bonus', 'Major Penalty'],
+        description="Optionally include a bonus/penalty."
+    ) #type:ignore
 ):
     user_id = message.author.id
     info = get_aptitude(user_id, aptitude)
@@ -235,8 +252,15 @@ async def check(
 )
 async def attack(
     message,
-    bonus: Option(int, required=False, min_value=-5, max_value=15), #type:ignore
-    reroll: Option(str, required=False, choices=['Edge', 'Snag']) #type:ignore
+    bonus: Option(
+        int, required=False, min_value=-5, max_value=15,
+        description="Choose an aptitude to compare to this check!"
+    ), #type:ignore
+    reroll: Option(
+        str, required=False, 
+        choices=['Edge', 'Snag'],
+        description="Optionally include a bonus/penalty."
+    ) #type:ignore
 ):
     user_id = message.author.id
     info = get_char(user_id)
@@ -345,8 +369,15 @@ async def rankup(message):
 )
 async def edit(
     message,
-    option: Option(str, required=True, choices=['Name', 'Image URL']), #type:ignore
-    input: Option(str, required=True) #type:ignore
+    option: Option(
+        str, required=True, 
+        choices=['Name', 'Image URL'],
+        description="What part of your character profile do you want to edit?"
+    ), #type:ignore
+    input: Option(
+        str, required=True,
+        description="Input the change you want to make to your chosen option."
+    ) #type:ignore
 ):
     user_id = message.author.id
     info = get_char(user_id)
@@ -363,7 +394,13 @@ async def edit(
     name="delete",
     description="Delete your character..."
 )
-async def delete(message, reason: Option(str, choices=['Character died.', 'Remaking them.', 'Other'], required=True)): #type:ignore
+async def delete(
+    message, 
+    reason: Option(str, required=True,
+        choices=['Character died.', 'Remaking them.', 'Other'],
+        description="Why are you deleting your character?"
+    ) #type:ignore
+): 
     user_id = message.author.id
     info = get_char(user_id)
     if not info:
