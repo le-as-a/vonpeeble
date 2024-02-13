@@ -4,8 +4,9 @@ from random import randint
 from protected import TOKEN, servers
 from logic import generate_stats, customized
 from db.api.character import new_char, get_char, get_aptitude, rank_up, edit_char, del_char
-from db.api.calling import get_calling
+from db.api.graveyard import new_death, view_graveyard
 from views.RankupView import RankupView
+from views.DeleteView import DeleteView
 
 intents = Intents.default()
 intents.message_content = True
@@ -336,5 +337,48 @@ async def rankup(message):
         color
     ))
 
+@bot.slash_command(
+    guild_ids=servers,
+    name="delete",
+    description="Delete your character..."
+)
+async def delete(message, reason: Option(str, choices=['Character died.', 'Remaking them.', 'Other'], required=True)): #type:ignore
+    user_id = message.author.id
+    info = get_char(user_id)
+    if not info:
+        await message.respond("There was an error finding your character. Try creating one with `/create`!")
+        return
+    (
+        userId,
+        char_name,
+        calling,
+        rank,
+        species,
+        size,
+        good1,
+        good2,
+        bad,
+        img_url,
+        might,
+        deftness,
+        grit,
+        insight,
+        aura
+    ) = info
+    desc = f"## Are you sure you want to delete \n# {char_name}?"
+    embed = Embed(
+        title="",
+        description=desc
+    )
+    embed.set_thumbnail(url=img_url)
+    await message.respond(embed=embed, view=DeleteView(
+        message,
+        userId,
+        char_name,
+        calling,
+        rank,
+        img_url,
+        reason
+    ))
 
 bot.run(TOKEN)
