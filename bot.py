@@ -1,6 +1,8 @@
-from discord import Intents, Option, Embed, Colour
+from discord import Intents, Option, Embed, Colour, User
 from discord.ext import commands
 from random import randint
+from datetime import datetime
+import calendar
 from protected import TOKEN, servers
 from logic import generate_stats, customized
 from db.api.character import new_char, get_char, get_aptitude, rank_up, edit_char, del_char
@@ -380,5 +382,38 @@ async def delete(message, reason: Option(str, choices=['Character died.', 'Remak
         img_url,
         reason
     ))
+
+@bot.slash_command(
+    guild_ids=servers,
+    name="graveyard",
+    description="View all the characters that have died."
+)
+async def graveyard(message):
+    deaths = view_graveyard()
+    embed = Embed(
+        title="",
+        description=f"## Gone but not forgotten."
+    )
+    embed.set_image(url="https://i.imgur.com/qonze34.gif")
+    for char in deaths:
+        (
+            userId,
+            char_name,
+            calling,
+            rank,
+            img,
+            date
+        ) = char
+        dt_obj = datetime.strptime(date, f'%Y-%m-%d')
+        epoch = calendar.timegm(dt_obj.timetuple())
+        user = await bot.fetch_user(userId)
+        embed.add_field(
+            name=f"{char_name} died <t:{epoch}:D>",
+            value=f"{calling}, Rank {rank}\nPlayed by {user.display_name}",
+            inline=False
+        )
+    await message.respond(embed=embed)
+    return
+
 
 bot.run(TOKEN)
