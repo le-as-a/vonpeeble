@@ -26,7 +26,10 @@ async def on_ready():
 )
 async def create(
     message,
-    char_name: Option(str, required=True), # type: ignore
+    char_name: Option(
+        str, required=True,
+        description="Name your shiny new character."
+    ), # type: ignore
     calling: Option(str, required=True, choices=[
         'Factotum',
         'Sneak',
