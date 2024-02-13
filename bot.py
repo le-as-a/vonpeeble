@@ -164,6 +164,7 @@ async def check(
     reroll: Option(str, required=False, choices=['Edge', 'Snag']), #type: ignore
     bonus: Option(str, required=False, choices=['Minor Bonus', 'Minor Penalty', 'Major Bonus', 'Major Penalty']) #type:ignore
 ):
+    user_id = message.author.id
     info = get_aptitude(user_id, aptitude)
     if not info:
         await message.respond("There was an error finding your character. Try creating one with `/create`!")
@@ -175,8 +176,6 @@ async def check(
     rejected = roll2
     total_chosen = roll1
     total_rejected = roll2
-    
-    user_id = message.author.id
     
     altered_roll = ""
     
