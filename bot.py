@@ -1,12 +1,12 @@
-from discord import Intents, Option, Embed, Colour, User
+from discord import Intents, Option, Embed, Colour
 from discord.ext import commands
 from random import randint
 from datetime import datetime
-import calendar
+import time
 from protected import TOKEN, servers
 from logic import generate_stats, customized
-from db.api.character import new_char, get_char, get_aptitude, rank_up, edit_char, del_char
-from db.api.graveyard import new_death, view_graveyard
+from db.api.character import new_char, get_char, get_aptitude, edit_char
+from db.api.graveyard import view_graveyard
 from views.RankupView import RankupView
 from views.DeleteView import DeleteView
 
@@ -139,7 +139,7 @@ async def profile(message):
     (calling_url, calling_color) = customized(calling)
     embed = Embed(
         title="",
-        description=f"# {char_name.title()}\n## {species} {calling}, Rank {rank}",
+        description=f"# {char_name.title()}\n## {calling}, Rank {rank}",
         color=Colour(int(calling_color, 16))
     )
     embed.set_image(url=img_url)
@@ -341,6 +341,26 @@ async def rankup(message):
 
 @bot.slash_command(
     guild_ids=servers,
+    name="edit",
+    description="Edit your character name or image."
+)
+async def edit(
+    message,
+    option: Option(str, required=True, choices=['Name', 'Image URL']), #type:ignore
+    input: Option(str, required=True) #type:ignore
+):
+    user_id = message.author.id
+    info = get_char(user_id)
+    if not info:
+        await message.respond("There was an error finding your character. Try creating one with `/create`!")
+        return
+    
+    edit_char(user_id, option, input)
+    await message.respond(f"{info[1]} successfully edited.")
+    return
+
+@bot.slash_command(
+    guild_ids=servers,
     name="delete",
     description="Delete your character..."
 )
@@ -404,13 +424,13 @@ async def graveyard(message):
             img,
             date
         ) = char
-        dt_obj = datetime.strptime(date, f'%Y-%m-%d')
-        epoch = calendar.timegm(dt_obj.timetuple())
+        dt_obj = datetime.strptime(date, f'%Y-%m-%d %H:%M:%S.%f%z')
+        epoch = time.mktime(dt_obj.timetuple())
         user = await bot.fetch_user(userId)
         embed.add_field(
-            name=f"{char_name} died <t:{epoch}:D>",
+            name=f"{char_name} died \n<t:{int(epoch)}:D>",
             value=f"{calling}, Rank {rank}\nPlayed by {user.display_name}",
-            inline=False
+            inline=True
         )
     await message.respond(embed=embed)
     return

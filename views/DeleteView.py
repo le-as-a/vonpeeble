@@ -1,6 +1,6 @@
 import discord
 from datetime import datetime
-import calendar
+import time
 from db.api.character import del_char
 from db.api.graveyard import new_death
 
@@ -26,9 +26,9 @@ class DeleteView(discord.ui.View):
         msg = ""
         if self.reason == "Character died.":
             time_of_death = new_death(self.user_id, self.char_name, self.calling, self.rank, self.img)
-            dt_obj = datetime.strptime(time_of_death, f'%Y-%m-%d')
-            epoch = calendar.timegm(dt_obj.timetuple())
-            msg = f"### {self.char_name} was buried in the graveyard \n### on <t:{epoch}:D>.\nView the dead with `/graveyard`."
+            dt_obj = datetime.strptime(time_of_death, f'%Y-%m-%d %H:%M:%S.%f%z')
+            epoch = time.mktime(dt_obj.timetuple())
+            msg = f"### {self.char_name} was buried in the graveyard \n### on <t:{int(epoch)}:D>.\nView the dead with `/graveyard`."
         else:
             msg = f"{self.char_name} has been deleted."
         embed = discord.Embed(

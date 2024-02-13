@@ -1,5 +1,5 @@
 from sqlite3 import connect
-from datetime import date
+from datetime import datetime, timezone
 
 """ CREATE TABLE graveyard (
     user_id INTEGER NOT NULL,
@@ -16,7 +16,8 @@ def startup():
     return (conn, cur)
 
 def new_death(user_id, char_name, calling, rank, img):
-    time_of_death = str(date.today())
+    time_of_death = str(datetime.now())
+    time_of_death += "-0600"
     (conn, cur) = startup()
     cur.execute(f"INSERT INTO graveyard VALUES ({user_id}, '{char_name}', '{calling}', {rank}, '{img}', '{time_of_death}')")
     conn.commit()
