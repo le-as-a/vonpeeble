@@ -1,4 +1,5 @@
-from discord import Intents, Option, Embed, Colour
+from discord import Intents, Option, Embed, Colour, SelectOption
+import discord
 from discord.ext import commands
 from random import randint
 from datetime import datetime
@@ -7,6 +8,7 @@ from protected import TOKEN, servers
 from logic import generate_stats, customized
 from db.api.character import new_char, get_char, get_aptitude, edit_char
 from db.api.graveyard import view_graveyard
+from db.api.ability import get_abilities, get_ability
 from views.RankupView import RankupView
 from views.DeleteView import DeleteView
 
@@ -474,5 +476,73 @@ async def graveyard(message):
     await message.respond(embed=embed)
     return
 
+@bot.slash_command(
+    guild_ids=servers,
+    name="abilities",
+    description="View information on abilities for a certain calling."
+)
+async def abilities(
+    message,
+    calling: Option(str, choices=[
+        'Factotum',
+        'Sneak',
+        'Champion',
+        'Raider',
+        'Battle Mage',
+        'Murder Noble',
+        'Sage',
+        'Heretic'    
+    ]), #type:ignore
+    ability_type: Option(str, choices=[
+        'Standard',
+        'Advanced'
+    ]) #type:ignore
+):
+    (img, color) = customized(calling)
+    abilities = get_abilities(calling, ability_type)
+    ability_options = [
+        SelectOption(label=f"{ability[0]}") for ability in abilities
+    ]
+    ability_select = discord.ui.Select(custom_id="ability_select",placeholder="Select an Ability",options=ability_options)
+    ability_view = discord.ui.View(timeout=300)
+    ability_view.add_item(ability_select)
+    
+    async def inter_check(inter):
+        if inter.user != message.author:
+            await inter.response.send_message("This is not your command!", ephemeral=True)
+            return False
+        return True
+    
+    ability_view.interaction_check = inter_check
+    
+    async def timeout():
+        ability_select.disabled = True
+        await message.edit(view=ability_view)
+        return
+    
+    ability_view.on_timeout = timeout
+    
+    async def ability_info(interaction):
+        ability = get_ability(ability_select.values[0])
+        embed = Embed(
+            title=f"{ability[0]} [{ability[2]}]",
+            description=ability[3],
+            color=Colour(int(color, 16))
+        )
+        embed.set_thumbnail(url=img)
+        await interaction.response.edit_message(embed=embed)
+    
+    ability_select.callback = ability_info
+    embed = Embed(
+        title="Choose an Ability to read about it below!",
+        color=Colour(int(color, 16))
+    )
+    embed.set_thumbnail(url=img)
+    
+    await message.respond(embed=embed, view=ability_view)
+    
+    
+
+# ============================
 
 bot.run(TOKEN)
