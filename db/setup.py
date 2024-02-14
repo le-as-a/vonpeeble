@@ -7,6 +7,8 @@ cur = conn.cursor()
 cur.execute("DROP TABLE IF EXISTS callings")
 cur.execute("DROP TABLE IF EXISTS characters")
 cur.execute("DROP TABLE IF EXISTS graveyard")
+cur.execute("DROP TABLE IF EXISTS abilities")
+cur.execute("DROP TABLE IF EXISTS character_abilities")
 
 for x in schemas:
     cur.execute(x)
