@@ -6,17 +6,28 @@ from datetime import datetime
 import time
 from protected import TOKEN, servers
 from logic import generate_stats, customized
+from commands import abilityCommand, abilityRankupCommand, scoreRankupCommand, myAbilities, myProfile
 from db.api.character import new_char, get_char, get_aptitude, edit_char, rank_up
 from db.api.graveyard import view_graveyard
-from db.api.ability import get_abilities, get_ability
+from db.api.ability import get_abilities, get_ability, get_char_abilities
 from db.api.character_ability import get_entries, new_entry
-from views.RankupView import RankupView
 from views.DeleteView import DeleteView
 
 intents = Intents.default()
 intents.message_content = True
 
 bot = commands.Bot(intents=intents)
+
+callings = [
+    'Factotum',
+    'Sneak',
+    'Champion',
+    'Raider',
+    'Battle Mage',
+    'Murder Noble',
+    'Sage',
+    'Heretic'
+]
 
 @bot.event
 async def on_ready():
@@ -33,16 +44,7 @@ async def create(
         str, required=True,
         description="Name your shiny new character."
     ), # type: ignore
-    calling: Option(str, required=True, choices=[
-        'Factotum',
-        'Sneak',
-        'Champion',
-        'Raider',
-        'Battle Mage',
-        'Murder Noble',
-        'Sage',
-        'Heretic'    
-    ],
+    calling: Option(str, required=True, choices=callings,
     description="Pick a calling from the list provided."), # type: ignore
     rank: Option(int, required=True, min_value=1, max_value=10), # type: ignore
     species: Option(str, required=True, choices=[
@@ -128,50 +130,22 @@ async def create(
     name="profile",
     description="View your BREAK!! RPG character."                   
 )
-async def profile(message):
+async def profile(
+    message,
+    option: Option(str, required=False, choices=['Abilities', 'Inventory']) #type:ignore
+):
     user_id = message.author.id
     info = get_char(user_id)
     if not info:
         await message.respond("There was an error finding your character. Try creating one with `/create`!")
         return
-    (
-        userId,
-        char_name,
-        calling,
-        rank,
-        species,
-        size,
-        good1,
-        good2,
-        bad,
-        img_url,
-        might,
-        deftness,
-        grit,
-        insight,
-        aura
-    ) = info
-    abilities = get_entries(user_id)
-    (calling_url, calling_color) = customized(calling)
-    embed = Embed(
-        title="",
-        description=f"# {char_name.title()}\n## {calling}, Rank {rank}",
-        color=Colour(int(calling_color, 16))
-    )
-    embed.set_image(url=img_url)
-    embed.set_thumbnail(url=calling_url)
-    stats = f"""**Might** {might}   
-    **Deftness** {deftness}     
-    **Grit** {grit}
-    **Insight** {insight}   
-    **Aura** {aura}"""
-    ability_names = ""
-    for a in abilities:
-        ability_names += f"**R{a[1]}:** {a[3]}\n"
-    embed.add_field(name="Aptitude Scores", value=stats,inline=False)
-    embed.add_field(name="Abilities", value=ability_names, inline=False)
-    await message.respond(embed=embed)
-    return
+    if option and option == 'Abilities':
+        (embed, ability_view) = myAbilities(message, info)
+        await message.respond(embed=embed, view=ability_view)
+    else:
+        embed = myProfile(info)
+        await message.respond(embed=embed)
+        return
 
 @bot.slash_command(
     guild_ids=servers,
@@ -330,127 +304,16 @@ async def rankup(message):
     if not info:
         await message.respond("There was an error finding your character. Try creating one with `/create`!")
         return
-    (
-        userId,
-        char_name,
-        calling,
-        rank,
-        species,
-        size,
-        good1,
-        good2,
-        bad,
-        img_url,
-        might,
-        deftness,
-        grit,
-        insight,
-        aura
-    ) = info
-    (url, color) = customized(calling)
+    rank = info[3]
     if rank == 10:
         await message.respond("Your character is at the max rank already!")
         return
     elif (rank + 1) % 2 == 0:
-        ability_rankup = discord.ui.View(timeout=60)
-        all_abilities = get_abilities(calling, "All")
-        char_abilities = [ ability[3] for ability in get_entries(user_id) ]
-        ability_option_names = []
-        if rank + 1 < 6:
-            ability_option_names = [ ability[0] for ability in all_abilities if ability[0] not in char_abilities and ability[2] != 'Advanced' ]
-        else:
-            ability_option_names = [ ability[0] for ability in all_abilities if ability[0] not in char_abilities ]
-        select_ability_options = [
-            SelectOption(label=f"{ability}") for ability in ability_option_names
-        ]
-        ability_select = discord.ui.Select(placeholder="Select an Ability",options=select_ability_options)
-        ability_rankup.add_item(ability_select)
-        
-        async def timeout():
-            ability_rankup.disable_all_items()
-            embed = Embed(
-                title="",
-                description=f"## Rank Up for {char_name.title()} has been cancelled."
-            )
-            await message.edit(embed=embed, view=ability_rankup)
-            return
-    
-        ability_rankup.on_timeout = timeout
-        
-        async def ability_info(interaction):
-            ability = get_ability(ability_select.values[0])
-            embed = Embed(
-                title=f"{ability[0]} [{ability[2]}]",
-                description=ability[3],
-                color=Colour(int(color, 16))
-            )
-            embed.set_thumbnail(url=url)
-            await interaction.response.edit_message(embed=embed)
-        
-        ability_select.callback = ability_info
-        
-        rankup_confirm = discord.ui.Button(label="Confirm Selection", style=discord.ButtonStyle.green)
-        ability_rankup.add_item(rankup_confirm)
-        
-        async def apply_rankup(interaction):
-            selected_ability = ability_select.values[0]
-            ability_rankup.disable_all_items()
-            embed = Embed(
-                title="",
-                description=f"## {char_name.title()}'s rank\n### increased to {rank+1}!\nGained a new ability: {selected_ability}",
-                color=Colour(int(color, 16))
-            )
-            embed.set_thumbnail(url=url)
-            await interaction.response.edit_message(embed=embed, view=ability_rankup)
-            rank_up(user_id, might, deftness, grit, insight, aura)
-            new_entry(user_id, rank+1, "Calling", f"{selected_ability}")
-            return
-        
-        rankup_confirm.callback = apply_rankup
-        
-        rankup_cancel = discord.ui.Button(label="Cancel Rankup", style=discord.ButtonStyle.gray)
-        ability_rankup.add_item(rankup_cancel)
-        
-        async def cancel_rankup(interaction):
-            timeout()
-        
-        rankup_cancel.callback = cancel_rankup
-        types_allowed = "Standard or Advanced" if rank+1 >= 6 else "Standard"
-        embed = Embed(
-            title="",
-            description=f"## Select a(n) {types_allowed} Ability to learn.",
-            color=Colour(int(color, 16))
-        )
-        embed.set_thumbnail(url=url)
-        
+        (embed, ability_rankup) = abilityRankupCommand(message, info)
         await message.respond(embed=embed, view=ability_rankup)
         
     else:
-        (next_might, next_deftness, next_grit, next_insight, next_aura) = generate_stats(calling, rank+1, species, good1, good2, bad)
-        desc = f"""## {char_name.title()}'s Rank Up
-### Rank {rank} Scores
-{might} | {deftness} | {grit} | {insight} | {aura}
-### Rank {rank+1} Scores
-{next_might} | {next_deftness} | {next_grit} | {next_insight} | {next_aura}"""
-        embed = Embed(
-            title="",
-            description=desc,
-            color=Colour(int(color, 16))
-        )
-        embed.set_thumbnail(url=url)
-        await message.respond(embed=embed, view=RankupView(
-            message, 
-            userId, 
-            char_name, 
-            rank, 
-            next_might, 
-            next_deftness, 
-            next_grit, 
-            next_insight, 
-            next_aura, 
-            url, 
-            color
-        ))
+        await scoreRankupCommand(message, info)
 
 @bot.slash_command(
     guild_ids=servers,
@@ -568,60 +431,16 @@ async def graveyard(message):
 )
 async def abilities(
     message,
-    calling: Option(str, choices=[
-        'Factotum',
-        'Sneak',
-        'Champion',
-        'Raider',
-        'Battle Mage',
-        'Murder Noble',
-        'Sage',
-        'Heretic'    
-    ]), #type:ignore
+    calling: Option(str, choices=callings), #type:ignore
     ability_type: Option(str, choices=[
         'Starter',
         'Standard',
         'Advanced'
     ]) #type:ignore
 ):
-    ability_type = "Default" if ability_type == 'Starter' else ability_type
-    (img, color) = customized(calling)
-    abilities = get_abilities(calling, ability_type)
-    ability_options = [
-        SelectOption(label=f"{ability[0]}") for ability in abilities
-    ]
-    ability_select = discord.ui.Select(placeholder="Select an Ability",options=ability_options)
-    ability_view = discord.ui.View(timeout=180)
-    ability_view.add_item(ability_select)
-    
-    async def timeout():
-        ability_select.disabled = True
-        await message.edit(view=ability_view)
-        return
-    
-    ability_view.on_timeout = timeout
-    
-    async def ability_info(interaction):
-        ability = get_ability(ability_select.values[0])
-        aType = "Starter" if ability[2] == "Default" else ability[2]
-        embed = Embed(
-            title=f"{ability[0]} [{aType}]",
-            description=ability[3],
-            color=Colour(int(color, 16))
-        )
-        embed.set_thumbnail(url=img)
-        await interaction.response.edit_message(embed=embed)
-    
-    ability_select.callback = ability_info
-    embed = Embed(
-        title="Choose an Ability to read about it below!",
-        color=Colour(int(color, 16))
-    )
-    embed.set_thumbnail(url=img)
-    
+    (ability_view, embed) = abilityCommand(message, calling, ability_type)
     await message.respond(embed=embed, view=ability_view)
-    
-    
+     
 
 # ============================
 

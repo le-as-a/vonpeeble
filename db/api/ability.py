@@ -28,3 +28,12 @@ def get_ability(ability_name):
     ability = cur.execute(f"SELECT * FROM abilities WHERE ability_name = '{ability_name}'").fetchone()
     conn.close()
     return ability
+
+def get_char_abilities(abilities):
+    (conn, cur) = startup()
+    char_abilities = []
+    for n in abilities:
+        ability = cur.execute(f"SELECT * FROM abilities WHERE ability_name = '{n}'").fetchone()
+        char_abilities.append(ability)
+    conn.close()
+    return char_abilities

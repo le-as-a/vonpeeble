@@ -1,4 +1,10 @@
+import discord
+from discord import Embed, Colour, SelectOption
 from db.api.calling import get_calling
+from db.api.ability import get_abilities, get_ability
+from db.api.character_ability import get_entries, new_entry
+from db.api.character import rank_up
+from views.RankupView import RankupView
 
 def good_stat(trait, might, deftness, grit, insight, aura):
     match trait:
@@ -70,5 +76,4 @@ def customized(calling):
             url = "https://i.imgur.com/N1Zh5KB.png"
             color = '5d358f'
     return (url, color)
-
 
