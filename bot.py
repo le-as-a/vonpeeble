@@ -494,26 +494,20 @@ async def abilities(
         'Heretic'    
     ]), #type:ignore
     ability_type: Option(str, choices=[
+        'Starter',
         'Standard',
         'Advanced'
     ]) #type:ignore
 ):
+    ability_type = "Default" if ability_type == 'Starter' else ability_type
     (img, color) = customized(calling)
     abilities = get_abilities(calling, ability_type)
     ability_options = [
         SelectOption(label=f"{ability[0]}") for ability in abilities
     ]
-    ability_select = discord.ui.Select(custom_id="ability_select",placeholder="Select an Ability",options=ability_options)
-    ability_view = discord.ui.View(timeout=300)
+    ability_select = discord.ui.Select(placeholder="Select an Ability",options=ability_options)
+    ability_view = discord.ui.View(timeout=180)
     ability_view.add_item(ability_select)
-    
-    async def inter_check(inter):
-        if inter.user != message.author:
-            await inter.response.send_message("This is not your command!", ephemeral=True)
-            return False
-        return True
-    
-    ability_view.interaction_check = inter_check
     
     async def timeout():
         ability_select.disabled = True
@@ -524,8 +518,9 @@ async def abilities(
     
     async def ability_info(interaction):
         ability = get_ability(ability_select.values[0])
+        aType = "Starter" if ability[2] == "Default" else ability[2]
         embed = Embed(
-            title=f"{ability[0]} [{ability[2]}]",
+            title=f"{ability[0]} [{aType}]",
             description=ability[3],
             color=Colour(int(color, 16))
         )
