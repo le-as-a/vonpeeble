@@ -3,7 +3,7 @@ from db.api.character import rank_up
 
 class RankupView(discord.ui.View):
     def __init__(self, msg, user_id, char_name, rank, might, deftness, grit, insight, aura, url, color):
-        super().__init__(timeout=10)
+        super().__init__(timeout=30)
         self.msg = msg
         self.user_id = user_id
         self.char_name = char_name
@@ -26,7 +26,7 @@ class RankupView(discord.ui.View):
         self.pressed = True
         embed = discord.Embed(
             title="",
-            description=f"## {self.char_name}'s rank \nincreased to {self.rank+1}!",
+            description=f"## {self.char_name}'s rank \n### increased to {self.rank+1}!",
             color=discord.Colour(int(self.color, 16))
         )
         embed.set_thumbnail(url=self.url)
