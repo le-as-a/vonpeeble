@@ -3,6 +3,7 @@ from datetime import datetime
 import time
 from db.api.character import del_char
 from db.api.graveyard import new_death
+from db.api.character_ability import del_entries
 
 class DeleteView(discord.ui.View):
     def __init__(self, msg, user_id, char_name, calling, rank, img, reason):
@@ -38,6 +39,7 @@ class DeleteView(discord.ui.View):
         embed.set_thumbnail(url=self.img)
         await inter.response.edit_message(embed=embed, view=self)
         del_char(self.user_id)
+        del_entries(self.user_id)
         return
     
     @discord.ui.button(

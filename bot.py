@@ -9,6 +9,7 @@ from logic import generate_stats, customized
 from db.api.character import new_char, get_char, get_aptitude, edit_char
 from db.api.graveyard import view_graveyard
 from db.api.ability import get_abilities, get_ability
+from db.api.character_ability import get_entries, new_entry
 from views.RankupView import RankupView
 from views.DeleteView import DeleteView
 
@@ -111,6 +112,10 @@ async def create(
         aura
     )
     
+    starter_abilities = [ability[0] for ability in get_abilities(calling, "Default")]
+    for x in starter_abilities:
+        new_entry(user_id, 1, "Calling", x)
+    
     if status:
         response = f"{char_name} was successfully created! Use `/profile` to view them."
     else:
@@ -146,6 +151,7 @@ async def profile(message):
         insight,
         aura
     ) = info
+    abilities = get_entries(user_id)
     (calling_url, calling_color) = customized(calling)
     embed = Embed(
         title="",
@@ -159,7 +165,11 @@ async def profile(message):
     **Grit** {grit}
     **Insight** {insight}   
     **Aura** {aura}"""
+    ability_names = ""
+    for a in abilities:
+        ability_names += f"**R{a[1]}:** {a[3]}\n"
     embed.add_field(name="Aptitude Scores", value=stats,inline=False)
+    embed.add_field(name="Abilities", value=ability_names, inline=False)
     await message.respond(embed=embed)
     return
 
