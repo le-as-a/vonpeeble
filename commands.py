@@ -189,11 +189,11 @@ def myAbilities(message, info):
     (img, color) = customized(calling)
     abilities = [ability[3] for ability in get_entries(user_id)]
     ability_info = get_char_abilities(abilities)
-    view = discord.ui.View(timeout=500)
+    view = discord.ui.View()
     select_opts = [
         SelectOption(label=f"{abi}") for abi in abilities
     ]
-    select = discord.ui.Select(placeholder="Select an Ability.",options=select_opts)
+    select = discord.ui.Select(placeholder=f"Select one of {char_name}'s Abilities to read more.",options=select_opts)
     view.add_item(select)
     
     async def timeout():
@@ -201,7 +201,7 @@ def myAbilities(message, info):
         await message.edit(view=view)
         return
     
-    view.timeout = timeout
+    view.on_timeout = timeout
     
     async def selectCallback(inter):
         ability = [abi for abi in ability_info if abi[0] == select.values[0]]
@@ -215,13 +215,13 @@ def myAbilities(message, info):
             color=Colour(int(color, 16))
         )
         embed.set_thumbnail(url=img_url)
-        await inter.response.edit_message(embed=embed, view=view)
+        await inter.response.edit_message(embed=embed)
         
     select.callback = selectCallback
     
     embed = Embed(
         title="",
-        description=f"## Select one of {char_name.title()}'s Abilities to learn more.",
+        description=f"## {char_name.title()}'s Abilities",
             color=Colour(int(color, 16))
     )
     embed.set_thumbnail(url=img_url)
