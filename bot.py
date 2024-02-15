@@ -269,11 +269,11 @@ async def attack(
     result = ""
     
     if reroll and reroll == 'Edge':
-        chosen = roll1 if roll1 < roll2 else roll2
+        chosen = roll1 if roll1 > roll2 else roll2
         rejected = roll2 if chosen == roll1 else roll1
         altered_roll += f"... with an **Edge** ({rejected}).\n"
     elif reroll and reroll == 'Snag':
-        chosen = roll1 if roll1 > roll2 else roll2
+        chosen = roll1 if roll1 < roll2 else roll2
         rejected = roll2 if chosen == roll1 else roll1
         altered_roll += f"... with a **Snag** ({rejected}).\n"
     
