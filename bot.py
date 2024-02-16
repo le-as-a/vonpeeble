@@ -12,6 +12,7 @@ from db.api.graveyard import view_graveyard
 from db.api.ability import get_abilities, get_ability, get_char_abilities
 from db.api.character_ability import get_entries, new_entry
 from views.DeleteView import DeleteView
+from views.ProfileView import ProfileView
 
 intents = Intents.default()
 intents.message_content = True
@@ -130,22 +131,15 @@ async def create(
     name="profile",
     description="View your BREAK!! RPG character."                   
 )
-async def profile(
-    message,
-    option: Option(str, required=False, choices=['Abilities', 'Inventory']) #type:ignore
-):
+async def profile(message):
     user_id = message.author.id
     info = get_char(user_id)
     if not info:
         await message.respond("There was an error finding your character. Try creating one with `/create`!")
         return
-    if option and option == 'Abilities':
-        (embed, ability_view) = myAbilities(message, info)
-        await message.respond(embed=embed, view=ability_view)
-    else:
-        embed = myProfile(info)
-        await message.respond(embed=embed)
-        return
+    embed = myProfile(info)
+    await message.respond(embed=embed, view=ProfileView(message, info))
+    return
 
 @bot.slash_command(
     guild_ids=servers,

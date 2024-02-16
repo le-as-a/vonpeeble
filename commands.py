@@ -193,7 +193,7 @@ def myAbilities(message, info):
     select_opts = [
         SelectOption(label=f"{abi}") for abi in abilities
     ]
-    select = discord.ui.Select(placeholder=f"Select one of {char_name}'s Abilities to read more.",options=select_opts)
+    select = discord.ui.Select(placeholder=f"Select one of {char_name}'s Abilities to read more.",options=select_opts,row=2)
     view.add_item(select)
     
     async def timeout():
@@ -226,7 +226,7 @@ def myAbilities(message, info):
     )
     embed.set_thumbnail(url=img_url)
     
-    return (embed, view)
+    return select_opts
     
 def myProfile(info):
     (
