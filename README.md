@@ -1,6 +1,8 @@
 # Von Peeble
 The data used for this project has been kept private due to copyright. The intent of this discord bot is to provide users with a platform to create a character for the tabletop RPG called BREAK!! RPG and allow users to make "dice rolls" via means of the bot. It uses SQLite 3 to store character information and the bot itself is written with Pycord AKA Python.
 
+[![My Skills](https://skillicons.dev/icons?i=py,sqlite,discord,bots)](https://skillicons.dev)
+
 ## Create function
 - use `/create` to start the character creation process
 - walks user through the process of creating a character for BREAK!! RPG
