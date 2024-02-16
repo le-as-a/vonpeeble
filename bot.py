@@ -9,7 +9,7 @@ from logic import generate_stats, customized
 from commands import abilityCommand, abilityRankupCommand, scoreRankupCommand, myAbilities, myProfile
 from db.api.character import new_char, get_char, get_aptitude, edit_char, rank_up
 from db.api.graveyard import view_graveyard
-from db.api.ability import get_abilities, get_ability, get_char_abilities
+from db.api.ability import get_abilities, get_ability, get_char_abilities, get_species_abilities
 from db.api.character_ability import get_entries, new_entry
 from views.DeleteView import DeleteView
 from views.ProfileView import ProfileView
@@ -114,6 +114,10 @@ async def create(
         insight,
         aura
     )
+    
+    species_abilities = [ability[0] for ability in get_species_abilities(species)]
+    for x in species_abilities:
+        new_entry(user_id, 0, "Species", x)
     
     starter_abilities = [ability[0] for ability in get_abilities(calling, "Default")]
     for x in starter_abilities:

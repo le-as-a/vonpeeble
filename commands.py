@@ -1,7 +1,7 @@
 import discord
 from discord import Embed, Colour, SelectOption
 from db.api.calling import get_calling
-from db.api.ability import get_abilities, get_ability, get_char_abilities
+from db.api.ability import get_abilities, get_ability, get_char_abilities, get_maturative_ability
 from db.api.character_ability import get_entries, new_entry
 from db.api.character import rank_up
 from views.RankupView import RankupView
@@ -65,12 +65,17 @@ def abilityRankupCommand(message, char_info):
     (url, color) = customized(calling)
     ability_rankup = discord.ui.View(timeout=60)
     all_abilities = get_abilities(calling, "All")
+    maturative_ability = get_maturative_ability(species)
+    all_abilities.append(maturative_ability)
     char_abilities = [ ability[3] for ability in get_entries(user_id) ]
     ability_option_names = []
     if rank + 1 < 6:
-        ability_option_names = [ ability[0] for ability in all_abilities if ability[0] not in char_abilities and ability[2] != 'Advanced' ]
+        ability_option_names = [ ability[0] for ability in all_abilities if ability[0] not in char_abilities and ability[2] not in ['Advanced', 'Maturative'] ]
     else:
         ability_option_names = [ ability[0] for ability in all_abilities if ability[0] not in char_abilities ]
+    def byNameSort(ability):
+        return ability[0]
+    ability_option_names.sort(key=byNameSort)
     select_ability_options = [
         SelectOption(label=f"{ability}") for ability in ability_option_names
     ]
@@ -123,7 +128,13 @@ def abilityRankupCommand(message, char_info):
     ability_rankup.add_item(rankup_cancel)
     
     async def cancel_rankup(interaction):
-        timeout()
+        ability_rankup.disable_all_items()
+        embed = Embed(
+            title="",
+            description=f"## Rank Up for {char_name.title()} has been cancelled."
+        )
+        await interaction.response.edit_message(embed=embed, view=ability_rankup)
+        return
     
     rankup_cancel.callback = cancel_rankup
     types_allowed = "Standard or Advanced" if rank+1 >= 6 else "Standard"
@@ -247,6 +258,9 @@ def myProfile(info):
         aura
     ) = info
     abilities = get_entries(user_id)
+    def rankSort(val):
+        return val[1]
+    abilities.sort(key=rankSort)
     (calling_url, calling_color) = customized(calling)
     embed = Embed(
         title="",
@@ -262,7 +276,10 @@ def myProfile(info):
     **Aura** {aura}"""
     ability_names = ""
     for a in abilities:
-        ability_names += f"**R{a[1]}:** {a[3]}\n"
+        if a[1] < 1:
+            ability_names += f"**{species}:** {a[3]}\n"
+        else:
+            ability_names += f"**R{a[1]}:** {a[3]}\n"
     embed.add_field(name="Aptitude Scores", value=stats,inline=False)
     embed.add_field(name="Abilities", value=ability_names, inline=False)
     

@@ -1,5 +1,5 @@
 from sqlite3 import connect
-from helper import schemas, callings, graveyard, characters, abilities, char_abilities # data is private due to copyright of BREAK!! RPG system
+from helper import schemas, callings, graveyard, characters, abilities, char_abilities, species_abilities # data is private due to copyright of BREAK!! RPG system
 
 conn = connect("data.db")
 cur = conn.cursor()
@@ -17,6 +17,7 @@ cur.executemany("INSERT INTO callings VALUES (?,?,?,?,?,?,?)", callings)
 cur.executemany("INSERT INTO graveyard VALUES (?,?,?,?,?,?)", graveyard)
 cur.executemany("INSERT INTO characters VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", characters)
 cur.executemany("INSERT INTO abilities VALUES (?,?,?,?)", abilities)
+cur.executemany("INSERT INTO abilities VALUES (?,?,?,?)", species_abilities)
 cur.executemany("INSERT INTO character_abilities VALUES (?,?,?,?)", char_abilities)
 conn.commit()
 conn.close()

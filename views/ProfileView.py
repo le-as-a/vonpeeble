@@ -23,14 +23,17 @@ class ProfileView(discord.ui.View):
             user_id = self.info[0]
             char_name = self.info[1]
             calling = self.info[2]
+            species = self.info[4]
             img_url = self.info[9]
             (img, color) = customized(calling)
             abilities = [ability[3] for ability in get_entries(user_id)]
             ability_info = get_char_abilities(abilities)
             ability = [abi for abi in ability_info if abi[0] == select.values[0]][0]
-            desc = f"""## {char_name.title()}'s Abilities
-### {ability[0]} [{ability[2]}]
-{ability[3]}"""
+            desc = f"## {char_name.title()}'s Abilities"
+            if ability[1] == species:
+                desc += f"\n### {ability[0]} [{species}]\n{ability[3]}"
+            else:
+                desc += f"\n### {ability[0]} [{ability[2]}]\n{ability[3]}"
             embed = Embed(
                 title="",
                 description=desc,
