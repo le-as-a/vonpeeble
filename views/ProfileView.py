@@ -1,9 +1,10 @@
 import discord
 from discord import Embed, Colour, SelectOption
 from commands import myProfile, myAbilities
-from logic import customized
+from logic import customized, quirk_decor
 from db.api.character_ability import get_entries
 from db.api.ability import get_char_abilities
+from db.api.character_quirk import get_char_quirk
 
 class ProfileView(discord.ui.View):
     def __init__(self, msg, info):
@@ -41,7 +42,7 @@ class ProfileView(discord.ui.View):
             )
             embed.set_thumbnail(url=img_url)
             for child in self.children:
-                if child.custom_id == "basics":
+                if child.custom_id == "basics" or child.custom_id == "quirk":
                     child.disabled = False
             await inter.response.edit_message(embed=embed, view=self)
         select.callback = selectCallback
@@ -57,6 +58,31 @@ class ProfileView(discord.ui.View):
     async def viewBasics(self, btn, inter):
         embed = myProfile(self.info)
         btn.disabled = True
+        for child in self.children:
+            if child.custom_id == "quirk":
+                child.disabled = False
+        await inter.response.edit_message(embed=embed, view=self)
+        
+    @discord.ui.button(
+        label="Quirk",
+        style=discord.ButtonStyle.green,
+        custom_id="quirk",
+        row=2
+    )
+    async def viewQuirk(self, btn, inter):
+        btn.disabled = True
+        user_id = self.info[0]
+        quirk = get_char_quirk(user_id)
+        (color, img) = quirk_decor(quirk[2], quirk[1])
+        embed = Embed(
+            title="",
+            description=f"## {quirk[1]} [{quirk[2]}]\n{quirk[3]}",
+            color=Colour(int(color, 16))
+        )
+        embed.set_thumbnail(url=img)
+        for child in self.children:
+            if child.custom_id == "basics" and child.disabled == True:
+                child.disabled = False
         await inter.response.edit_message(embed=embed, view=self)
         
     async def on_timeout(self):

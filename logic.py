@@ -77,3 +77,68 @@ def customized(calling):
             color = '5d358f'
     return (url, color)
 
+def quirk_decor(quirk_type, quirk_name):
+    color = ''
+    images = {
+        "Adorable": "https://i.imgur.com/R2iNILK.png",
+        "Always Prepared": "https://i.imgur.com/ptKPu4A.png",
+        "Angelic Countenance": "https://i.imgur.com/iI4EHbC.png",
+        "Battle Scanner": "https://i.imgur.com/d3079fe.png",
+        "Beast Tongue": "https://i.imgur.com/kmiIPJz.png",
+        "Big Eater": "https://i.imgur.com/Zc8Bg3J.png",
+        "Bioskin": "https://i.imgur.com/BBBlFez.png",
+        "Boring": "https://i.imgur.com/8jk25J1.png",
+        "Buster Arm": "https://i.imgur.com/PwcHvO7.png",
+        "Clear Intent": "https://i.imgur.com/yRbP4zq.png",
+        "Crowned": "https://i.imgur.com/yb42p6B.png",
+        "Curious": "https://i.imgur.com/Y536ILH.png",
+        "Dark Demeanor": "https://i.imgur.com/1uDrkSz.png",
+        "Destined": "https://i.imgur.com/qfB0yUK.png",
+        "Dread Orator": "https://i.imgur.com/IiS8mGQ.png",
+        "Dreamer": "https://i.imgur.com/k7pwItu.png",
+        "Fairy Cap": "https://i.imgur.com/0tAacfL.png",
+        "Ferrous": "https://i.imgur.com/cehVW2M.png",
+        "Figment Follower": "https://i.imgur.com/H7uqXCa.png",
+        "Girthsome": "https://i.imgur.com/RlKfKo5.png",
+        "Grasping Tresses": "https://i.imgur.com/Jrf8Ih0.png",
+        "Guardian": "https://i.imgur.com/CZC789e.png",
+        "Industrial Frame": "https://i.imgur.com/XrJwT3L.png",
+        "Infested": "https://i.imgur.com/c1wcTlg.png",
+        "Jumpy": "https://i.imgur.com/yjhFxQC.png",
+        "Lyrical": "https://i.imgur.com/6bWtcRk.png",
+        "Mage Breaker": "https://i.imgur.com/0vKJWqw.png",
+        "Mascot Chassis": "https://i.imgur.com/aWikBoe.png",
+        "Masked": "https://i.imgur.com/YJhoQpX.png",
+        "Miser": "https://i.imgur.com/5gZNFo4.png",
+        "Nanotech Maintenance": "https://i.imgur.com/U5q4RIB.png",
+        "Nearsighted": "https://i.imgur.com/1xYrQUo.png",
+        "Nox-Vision": "https://i.imgur.com/HAkSN9G.png",
+        "Past Injury": "https://i.imgur.com/vBvc2FM.png",
+        "Peculiar Taste": "https://i.imgur.com/Ts6Wgbu.png",
+        "Pedantic": "https://i.imgur.com/IeqEu2u.png",
+        "Sneezles": "https://i.imgur.com/YySHNOe.png",
+        "Soul Link": "https://i.imgur.com/yXFVmHL.png",
+        "Sproing Sprockets": "https://i.imgur.com/MKXjWBw.png",
+        "Stylish": "https://i.imgur.com/vP0cpSj.png",
+        "Survivor": "https://i.imgur.com/jtZnKHR.png",
+        "Translator Module": "https://i.imgur.com/629d711.png",
+        "Unhinged": "https://i.imgur.com/Omb1IqU.png",
+        "Utility Servo": "https://i.imgur.com/mPDRcGI.png",
+        "Waifish": "https://i.imgur.com/RRJfgRl.png",
+        "Weary": "https://i.imgur.com/TEGxVH4.png",
+        "Winged": "https://i.imgur.com/Uee4nk5.png",
+        "Young": "https://i.imgur.com/YL0gn3Y.png"
+    }
+    match quirk_type:
+        case 'Spirit':
+            color = '95f5ed'
+        case 'Physiology':
+            color = 'f0975b'
+        case 'Fate':
+            color = '8367b8'
+        case 'Eldritch':
+            color = 'e3d21b'
+        case 'Robotic':
+            color = 'd4d4d4'
+    
+    return (color, images[quirk_name])

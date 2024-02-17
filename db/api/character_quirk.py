@@ -3,6 +3,7 @@ from sqlite3 import connect
 """ CREATE TABLE character_quirk (
     user_id INTEGER NOT NULL,
     quirk_name VARCHAR(255) NOT NULL,
+    quirk_type VARCHAR(255) NOT NULL,
     description TEXT NOT NULL
 )"""
 
@@ -11,9 +12,9 @@ def startup():
     cur = conn.cursor()
     return (conn, cur)
 
-def new_char_quirk(user_id, quirk_name, description):
+def new_char_quirk(user_id, quirk_name, quirk_type, description):
     (conn, cur) = startup()
-    cur.execute("INSERT INTO character_quirk VALUES (?,?,?)", (user_id, quirk_name, description))
+    cur.execute("INSERT INTO character_quirk VALUES (?,?,?,?)", (user_id, quirk_name, quirk_type, description))
     conn.commit()
     conn.close()
     
@@ -25,7 +26,6 @@ def del_char_quirk(user_id):
     
 def get_char_quirk(user_id):
     (conn, cur) = startup()
-    (quirk_name) = cur.execute(f"SELECT quirk_name FROM character_quirk WHERE user_id = {user_id}").fetchone()
-    quirk = cur.execute(f"SELECT * FROM quirks WHERE quirk_name = '{quirk_name}'").fetchone()
+    quirk = cur.execute(f"SELECT * FROM character_quirk WHERE user_id = {user_id}").fetchone()
     conn.close()
     return quirk

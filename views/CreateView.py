@@ -3,6 +3,7 @@ from db.api.quirk import get_all_quirks
 from db.api.character_quirk import new_char_quirk
 from db.api.character import del_char
 from db.api.character_ability import del_entries
+from logic import quirk_decor
 
 class CreateView(discord.ui.View):
     def __init__(self, user_id, char_name):
@@ -31,7 +32,7 @@ class CreateView(discord.ui.View):
     )
     async def confirmQuirk(self, btn, inter):
         (quirk_name, quirk_type, desc) = self.selected_quirk
-        new_char_quirk(self.user_id, quirk_name, desc)
+        new_char_quirk(self.user_id, quirk_name, quirk_type, desc)
         self.disable_all_items()
         embed = discord.Embed(
             title="",
@@ -79,10 +80,13 @@ class CreateView(discord.ui.View):
             self.quirk_type = select.values[0]
             quirk = [ q for q in self.all_quirks if q[0] == quirkSelect.values[0] ][0]
             self.selected_quirk = quirk
+            (color, img) = quirk_decor(quirk[1], quirk[0])
             embed = discord.Embed(
                 title=f"{quirk[0]} [{quirk[1]}]",
-                description=f"{quirk[2]}"
+                description=f"{quirk[2]}",
+                color=discord.Colour(int(color, 16))
             )
+            embed.set_thumbnail(url=img)
             await interaction.response.edit_message(embed=embed, view=self)
         quirkSelect.callback = quirkSelectCallback
         select.placeholder = select.values[0]
