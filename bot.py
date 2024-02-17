@@ -454,6 +454,17 @@ async def abilities(
     (ability_view, embed) = abilityCommand(message, calling, ability_type)
     await message.respond(embed=embed, view=ability_view)
 
+@bot.slash_command(
+    guild_ids=servers,
+    name="info",
+    description="Get information on various topics from BREAK!! RPG rulebook."
+)
+async def info(message):
+    embed = Embed(
+        title="",
+        description="### Select a topic to read about."
+    )
+    
 
 # ============================
 
