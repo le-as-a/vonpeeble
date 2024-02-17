@@ -140,11 +140,21 @@ async def create(
     name="profile",
     description="View your BREAK!! RPG character."                   
 )
-async def profile(message):
-    user_id = message.author.id
+async def profile(
+    message,
+    user: Option(discord.User, required=False) #type:ignore
+):
+    user_id = 0
+    error_msg = ""
+    if user:
+        user_id = user.id
+        error_msg = "This user doesn't have a character!"
+    else:
+        user_id = message.author.id
+        error_msg = "There was an error finding your character. Try creating one with `/create`!"
     info = get_char(user_id)
     if not info:
-        await message.respond("There was an error finding your character. Try creating one with `/create`!")
+        await message.respond(error_msg)
         return
     embed = myProfile(info)
     await message.respond(embed=embed, view=ProfileView(message, info))
@@ -443,7 +453,7 @@ async def abilities(
 ):
     (ability_view, embed) = abilityCommand(message, calling, ability_type)
     await message.respond(embed=embed, view=ability_view)
-     
+
 
 # ============================
 
