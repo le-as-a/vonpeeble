@@ -2,7 +2,8 @@ from sqlite3 import connect
 
 """ CREATE TABLE character_quirk (
     user_id INTEGER NOT NULL,
-    quirk_name VARCHAR(255) NOT NULL
+    quirk_name VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL
 )"""
 
 def startup():
@@ -10,9 +11,9 @@ def startup():
     cur = conn.cursor()
     return (conn, cur)
 
-def new_char_quirk(user_id, quirk_name):
+def new_char_quirk(user_id, quirk_name, description):
     (conn, cur) = startup()
-    cur.execute(f"INSERT INTO character_quirk VALUES ({user_id}, '{quirk_name}')")
+    cur.execute("INSERT INTO character_quirk VALUES (?,?,?)", (user_id, quirk_name, description))
     conn.commit()
     conn.close()
     

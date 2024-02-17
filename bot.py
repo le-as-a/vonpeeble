@@ -13,6 +13,7 @@ from db.api.ability import get_abilities, get_ability, get_char_abilities, get_s
 from db.api.character_ability import get_entries, new_entry
 from views.DeleteView import DeleteView
 from views.ProfileView import ProfileView
+from views.CreateView import CreateView
 
 intents = Intents.default()
 intents.message_content = True
@@ -124,10 +125,14 @@ async def create(
         new_entry(user_id, 1, "Calling", x)
     
     if status:
-        response = f"{char_name} was successfully created! Use `/profile` to view them."
+        embed = Embed(
+            title="Choose your Quirk.",
+            description="Select a Quirk type to view more."
+        )
+        await message.respond(embed=embed, view=CreateView(user_id, char_name))
     else:
         response = f"There was an error creating this character. Are you sure you don't already have one?"
-    await message.respond(response)
+        await message.respond(response)
     return
 
 @bot.slash_command(

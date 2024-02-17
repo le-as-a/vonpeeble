@@ -4,6 +4,7 @@ import time
 from db.api.character import del_char
 from db.api.graveyard import new_death
 from db.api.character_ability import del_entries
+from db.api.character_quirk import del_char_quirk
 
 class DeleteView(discord.ui.View):
     def __init__(self, msg, user_id, char_name, calling, rank, img, reason):
@@ -40,6 +41,7 @@ class DeleteView(discord.ui.View):
         await inter.response.edit_message(embed=embed, view=self)
         del_char(self.user_id)
         del_entries(self.user_id)
+        del_char_quirk(self.user_id)
         return
     
     @discord.ui.button(
