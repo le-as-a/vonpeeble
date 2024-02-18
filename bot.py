@@ -5,7 +5,7 @@ from random import randint
 from datetime import datetime
 import time
 from protected import TOKEN, servers
-from logic import generate_stats, customized
+from logic import generate_stats, customized, apt_check
 from commands import abilityCommand, abilityRankupCommand, scoreRankupCommand, myAbilities, myProfile
 from db.api.character import new_char, get_char, get_aptitude, edit_char, rank_up
 from db.api.graveyard import view_graveyard
@@ -31,6 +31,14 @@ callings = [
     'Sage',
     'Heretic'
 ]
+
+apt_desc = {
+    "Might": "Smash, crush, lift",
+    "Deftness": "Dodge, sneak, leap",
+    "Grit": "Cling, persist, press on",
+    "Insight": "Notice, know, remember",
+    "Aura": "Persuade, inspire, terrify"
+}
 
 @bot.event
 async def on_ready():
@@ -196,7 +204,7 @@ async def check(
     rejected = roll2
     total_chosen = roll1
     total_rejected = roll2
-    
+
     altered_roll = ""
     
     if reroll and reroll == 'Edge':
@@ -237,12 +245,15 @@ async def check(
     
     result = f"## Special Success for {char_name}!" if chosen == score else f"## {char_name} succeeded!" if total_chosen <= score else "... Failure."
     total = f"{total_chosen} ({chosen} - 2)" if bonus == 'Minor Bonus' else f"{total_chosen} ({chosen} - 4)" if bonus == 'Major Bonus' else f"{total_chosen} ({chosen} + 2)" if bonus == 'Minor Penalty' else f"{total_chosen} ({chosen} + 4)"
-    desc = f"""## {aptitude} check
-    {altered_roll}\n# {total if bonus and result != f"## Special Success for {char_name}!" else chosen} `vs` {score}\n{result}
-    """
+    desc = f"""## {aptitude} check\n{apt_desc[aptitude]}
+---
+{altered_roll}\n# {total if bonus and result != f"## Special Success for {char_name}!" else chosen} `vs` {score}\n{result}
+"""
+    color = apt_check(aptitude)
     embed = Embed(
         title="",
-        description=desc
+        description=desc,
+        color=Colour(int(color, 16))
     )
     embed.set_thumbnail(url=img_url)
     await message.respond(embed=embed)

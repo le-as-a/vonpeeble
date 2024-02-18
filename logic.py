@@ -144,3 +144,18 @@ def qImg(quirk_name):
         "Young": "https://i.imgur.com/YL0gn3Y.png"
     }
     return images[quirk_name]
+
+def apt_check(aptitude):
+    color = ''
+    match aptitude:
+        case 'Might':
+            color = 'fca103'
+        case 'Deftness':
+            color = '69b802'
+        case 'Grit':
+            color = 'b80245'
+        case 'Insight':
+            color = '00e7eb'
+        case 'Aura':
+            color = 'ba45d1'
+    return color

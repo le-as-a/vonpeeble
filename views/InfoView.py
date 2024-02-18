@@ -238,5 +238,6 @@ class InfoView(discord.ui.View):
                 typeSelect.callback = typeSelected
                 
                 await topicInter.response.edit_message(embed=topicEmbed, view=self)
+            
                         
                     
