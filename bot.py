@@ -14,6 +14,7 @@ from db.api.character_ability import get_entries, new_entry
 from views.DeleteView import DeleteView
 from views.ProfileView import ProfileView
 from views.CreateView import CreateView
+from views.InfoView import InfoView
 
 intents = Intents.default()
 intents.message_content = True
@@ -464,6 +465,9 @@ async def info(message):
         title="",
         description="### Select a topic to read about."
     )
+    await message.respond(embed=embed, view=InfoView())
+    return
+
     
 
 # ============================

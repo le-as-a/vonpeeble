@@ -16,7 +16,7 @@ def get_abilities(calling, ability_type):
     (conn, cur) = startup()
     cmd = ""
     if ability_type == "All":
-        cmd = f"SELECT * FROM abilities WHERE source = '{calling}' AND NOT ability_type = 'Default'"
+        cmd = f"SELECT * FROM abilities WHERE source = '{calling}'"
     else:
         cmd = f"SELECT * FROM abilities WHERE source = '{calling}' AND ability_type = '{ability_type}'"
     abilities = cur.execute(cmd).fetchall()
