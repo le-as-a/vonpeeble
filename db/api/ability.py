@@ -49,3 +49,9 @@ def get_maturative_ability(species):
     maturative_ability = cur.execute(f"SELECT * FROM abilities WHERE source = '{species}' AND ability_type = 'Maturative'").fetchone()
     conn.close()
     return maturative_ability
+
+def get_all_species_abilities():
+    (conn, cur) = startup()
+    abilities = cur.execute(f"SELECT * FROM abilities WHERE ability_type = 'Innate' OR ability_type = 'Maturative'").fetchall()
+    conn.close()
+    return abilities
