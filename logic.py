@@ -77,8 +77,22 @@ def customized(calling):
             color = '5d358f'
     return (url, color)
 
-def quirk_decor(quirk_type, quirk_name):
-    color = ''
+def qColor(quirk_type):
+    match quirk_type:
+        case 'Spirit':
+            color = '95f5ed'
+        case 'Physiology':
+            color = 'f0975b'
+        case 'Fate':
+            color = '8367b8'
+        case 'Eldritch':
+            color = 'e3d21b'
+        case 'Robotic':
+            color = 'd4d4d4'
+    
+    return color
+
+def qImg(quirk_name):
     images = {
         "Adorable": "https://i.imgur.com/R2iNILK.png",
         "Always Prepared": "https://i.imgur.com/ptKPu4A.png",
@@ -129,16 +143,4 @@ def quirk_decor(quirk_type, quirk_name):
         "Winged": "https://i.imgur.com/Uee4nk5.png",
         "Young": "https://i.imgur.com/YL0gn3Y.png"
     }
-    match quirk_type:
-        case 'Spirit':
-            color = '95f5ed'
-        case 'Physiology':
-            color = 'f0975b'
-        case 'Fate':
-            color = '8367b8'
-        case 'Eldritch':
-            color = 'e3d21b'
-        case 'Robotic':
-            color = 'd4d4d4'
-    
-    return (color, images[quirk_name])
+    return images[quirk_name]

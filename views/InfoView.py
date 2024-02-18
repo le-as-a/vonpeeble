@@ -1,7 +1,7 @@
 import discord
 from db.api.ability import get_abilities, get_all_species_abilities
 from db.api.quirk import get_all_quirks
-from logic import customized, quirk_decor
+from logic import customized, qColor, qImg
 
 class InfoView(discord.ui.View):
     def __init__(self):
@@ -18,8 +18,7 @@ class InfoView(discord.ui.View):
     )
     async def topicSelect(self, topicSel, topicInter):
         topicSelected = topicSel.placeholder = topicSel.values[0]
-        print(len(self.children))
-        for child in self.children:
+        for child in self.children[::-1]:
             if child.custom_id != "topic-select":
                 self.remove_item(child)
         
@@ -178,3 +177,66 @@ class InfoView(discord.ui.View):
                 speciesSelect.callback = speciesSelected
                 
                 await topicInter.response.edit_message(embed=topicEmbed, view=self)
+            case 'Character Quirks':
+                quirks = get_all_quirks()
+                typeSelect = discord.ui.Select(
+                    placeholder="Select a Quirk type.",
+                    options=[
+                        discord.SelectOption(label="Spirit"),
+                        discord.SelectOption(label="Physiology"),
+                        discord.SelectOption(label="Fate"),
+                        discord.SelectOption(label="Eldritch"),
+                        discord.SelectOption(label="Robotic")
+                    ],
+                    custom_id="type-select"
+                )
+                self.add_item(typeSelect)
+                
+                async def typeSelected(typeInter):
+                    qType = typeSelect.placeholder = typeSelect.values[0]
+                    color = qColor(qType)
+                    
+                    if len(self.children) == 3:
+                        for child in self.children:
+                            if child.custom_id == "quirk-select":
+                                self.remove_item(child)
+                    
+                    quirkSelect = discord.ui.Select(
+                        placeholder="Select a quirk.",
+                        options=[
+                            discord.SelectOption(
+                                label=f"{quirk[0]}"
+                            ) for quirk in quirks if qType == quirk[1]
+                        ],
+                        custom_id="quirk-select"
+                    )
+                    self.add_item(quirkSelect)
+                    
+                    typeEmbed = discord.Embed(
+                        title="",
+                        description=f"## You selected {qType}!\n### Choose a quirk to learn more.",
+                        color=discord.Colour(int(color, 16))
+                    )
+                    
+                    async def quirkSelected(quirkInter):
+                        quirkSelect.placeholder = quirkSelect.values[0]
+                        quirk = [
+                            q for q in quirks if q[0] == quirkSelect.values[0]
+                        ][0]
+                        img = qImg(quirk[0])
+                        quirkEmbed = discord.Embed(
+                            title=f"{quirk[0]}",
+                            description=quirk[2],
+                            color=discord.Colour(int(color, 16))
+                        )
+                        quirkEmbed.set_thumbnail(url=img)
+                        
+                        await quirkInter.response.edit_message(embed=quirkEmbed, view=self)
+                    quirkSelect.callback = quirkSelected
+                    
+                    await typeInter.response.edit_message(embed=typeEmbed, view=self)
+                typeSelect.callback = typeSelected
+                
+                await topicInter.response.edit_message(embed=topicEmbed, view=self)
+                        
+                    

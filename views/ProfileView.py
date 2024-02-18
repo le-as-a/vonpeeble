@@ -1,7 +1,7 @@
 import discord
 from discord import Embed, Colour, SelectOption
 from commands import myProfile, myAbilities
-from logic import customized, quirk_decor
+from logic import customized, qColor, qImg
 from db.api.character_ability import get_entries
 from db.api.ability import get_char_abilities
 from db.api.character_quirk import get_char_quirk
@@ -73,7 +73,8 @@ class ProfileView(discord.ui.View):
         btn.disabled = True
         user_id = self.info[0]
         quirk = get_char_quirk(user_id)
-        (color, img) = quirk_decor(quirk[2], quirk[1])
+        img = qImg(quirk[1])
+        color = qColor(quirk[2])
         embed = Embed(
             title="",
             description=f"## {quirk[1]} [{quirk[2]}]\n{quirk[3]}",
