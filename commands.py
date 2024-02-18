@@ -1,48 +1,10 @@
 import discord
 from discord import Embed, Colour, SelectOption
-from db.api.calling import get_calling
 from db.api.ability import get_abilities, get_ability, get_char_abilities, get_maturative_ability
 from db.api.character_ability import get_entries, new_entry
 from db.api.character import rank_up
 from views.RankupView import RankupView
 from logic import customized, generate_stats
-
-def abilityCommand(message, calling, ability_type):
-    ability_type = "Default" if ability_type == 'Starter' else ability_type
-    (img, color) = customized(calling)
-    abilities = get_abilities(calling, ability_type)
-    ability_options = [
-        SelectOption(label=f"{ability[0]}") for ability in abilities
-    ]
-    ability_select = discord.ui.Select(placeholder="Select an Ability",options=ability_options)
-    ability_view = discord.ui.View(timeout=180)
-    ability_view.add_item(ability_select)
-    
-    async def timeout():
-        ability_select.disabled = True
-        await message.edit(view=ability_view)
-        return
-    
-    ability_view.on_timeout = timeout
-    
-    async def ability_info(interaction):
-        ability = get_ability(ability_select.values[0])
-        aType = "Starter" if ability[2] == "Default" else ability[2]
-        embed = Embed(
-            title=f"{ability[0]} [{aType}]",
-            description=ability[3],
-            color=Colour(int(color, 16))
-        )
-        embed.set_thumbnail(url=img)
-        await interaction.response.edit_message(embed=embed)
-    
-    ability_select.callback = ability_info
-    embed = Embed(
-        title="Choose an Ability to read about it below!",
-        color=Colour(int(color, 16))
-    )
-    embed.set_thumbnail(url=img)
-    return (ability_view, embed)
 
 def abilityRankupCommand(message, char_info):
     (

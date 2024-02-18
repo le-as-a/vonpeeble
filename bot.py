@@ -5,8 +5,8 @@ from random import randint
 from datetime import datetime
 import time
 from protected import TOKEN, servers
-from logic import generate_stats, customized, apt_check
-from commands import abilityCommand, abilityRankupCommand, scoreRankupCommand, myAbilities, myProfile
+from logic import generate_stats, customized, apt_check, injury_table, specRoll
+from commands import abilityRankupCommand, scoreRankupCommand, myProfile
 from db.api.character import new_char, get_char, get_aptitude, edit_char, rank_up
 from db.api.graveyard import view_graveyard
 from db.api.ability import get_abilities, get_ability, get_char_abilities, get_species_abilities
@@ -451,23 +451,6 @@ async def graveyard(message):
 
 @bot.slash_command(
     guild_ids=servers,
-    name="abilities",
-    description="View information on abilities for a certain calling."
-)
-async def abilities(
-    message,
-    calling: Option(str, choices=callings), #type:ignore
-    ability_type: Option(str, choices=[
-        'Starter',
-        'Standard',
-        'Advanced'
-    ]) #type:ignore
-):
-    (ability_view, embed) = abilityCommand(message, calling, ability_type)
-    await message.respond(embed=embed, view=ability_view)
-
-@bot.slash_command(
-    guild_ids=servers,
     name="info",
     description="Get information on various topics from BREAK!! RPG rulebook."
 )
@@ -479,7 +462,28 @@ async def info(message):
     await message.respond(embed=embed, view=InfoView())
     return
 
-    
+@bot.slash_command(
+    guild_ids=servers,
+    name="injury",
+    description="Choose a severity level for injury and roll on the injury table."
+)
+async def injury(
+    message,
+    severity: Option(int, required=True, min_value=1, max_value=3) #type:ignore
+):
+    roll = randint(1, 20)
+    (injury, special_roll, img) = injury_table(severity, roll)
+    if special_roll:
+        injury += specRoll(special_roll)
+    severity_type = "First" if severity == 1 else "Second" if severity == 2 else "Third"
+    color = '7cd606' if severity == 1 else 'd67806' if severity == 2 else 'd60606'
+    embed = Embed(
+        title="",
+        description=f"""## INJURY ROLL [{severity_type} offense]\n{injury}""",
+        color=Colour(int(color, 16))
+    )
+    embed.set_thumbnail(url=img)
+    await message.respond(embed=embed)
 
 # ============================
 
