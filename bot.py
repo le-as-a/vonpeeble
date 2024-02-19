@@ -138,7 +138,7 @@ async def create(
             title="Choose your Quirk.",
             description="Select a Quirk type to view more."
         )
-        await message.respond(embed=embed, view=CreateView(user_id, char_name))
+        await message.respond(embed=embed, view=CreateView(user_id, char_name), ephemeral=True)
     else:
         response = f"There was an error creating this character. Are you sure you don't already have one?"
         await message.respond(response)

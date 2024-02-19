@@ -80,8 +80,8 @@ class CreateView(discord.ui.View):
             self.quirk_type = select.values[0]
             quirk = [ q for q in self.all_quirks if q[0] == quirkSelect.values[0] ][0]
             self.selected_quirk = quirk
-            color = quirk[1]
-            img = quirk[0]
+            color = qColor(quirk[1])
+            img = qImg(quirk[0])
             embed = discord.Embed(
                 title=f"{quirk[0]} [{quirk[1]}]",
                 description=f"{quirk[2]}",
