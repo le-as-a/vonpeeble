@@ -213,21 +213,21 @@ def specRoll(roll_type):
     match roll_type:
         case 'Broken arm':
             if coin_flip:
-                res = f"\n---\nYou rolled a {roll} and break your right arm."
+                res = f"\n---\n### You rolled a {roll} and break your right arm."
             else:
-                res = f"\n---\nYou rolled a {roll} and break your left arm."
+                res = f"\n---\n### You rolled a {roll} and break your left arm."
         case 'Broken leg':
             if coin_flip:
-                res = f"\n---\nYou rolled a {roll} and break your right leg."
+                res = f"\n---\n### You rolled a {roll} and break your right leg."
             else:
-                res = f"\n---\nYou rolled a {roll} and break your left leg."
+                res = f"\n---\n### You rolled a {roll} and break your left leg."
         case 'Severed':
             if roll in range(1, 5):
-                res = f"\n---\nYou rolled a {roll} and lose your right arm."
+                res = f"\n---\n### You rolled a {roll} and lose your right arm."
             elif roll in range (6,10):
-                res = f"\n---\nYou rolled a {roll} and lose your left arm."
+                res = f"\n---\n### You rolled a {roll} and lose your left arm."
             elif roll in range(11,15):
-                res = f"\n---\nYou rolled a {roll} and lose your right leg."
+                res = f"\n---\n### You rolled a {roll} and lose your right leg."
             else:
                 res = f"\n---\nYou rolled a {roll} and lose your left leg."
     

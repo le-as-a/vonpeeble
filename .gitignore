@@ -2,6 +2,7 @@
 protected.py
 db/helper.py
 data.db
+logic.py
 
 # Editors
 .vscode/
