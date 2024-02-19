@@ -3,6 +3,22 @@ The data used for this project has been kept private due to copyright. The inten
 
 [![My Skills](https://skillicons.dev/icons?i=py,sqlite,discord,bots)](https://skillicons.dev)
 
+## Info function
+- use `/info` to view information about the game
+
+![image](https://github.com/le-as-a/vonpeeble/assets/89109803/3fd9c71c-a518-4f16-aa79-399b041cfdff)
+
+- based on the option you chose, the bot generates another drop down menu with different options
+
+![image](https://github.com/le-as-a/vonpeeble/assets/89109803/bbe37f68-0444-4a61-987f-6d203af97a66)
+![image](https://github.com/le-as-a/vonpeeble/assets/89109803/bb9e60e4-9ca0-4cfb-9a3c-6da4edd1f814)
+![image](https://github.com/le-as-a/vonpeeble/assets/89109803/26ca2d64-bd3a-49d0-9adb-06e047118fdb)
+
+- generates a third selection menu after selecting the sub-type of information desired
+- information changes as you select different options
+
+![Discord_rysf5cCbo0](https://github.com/le-as-a/vonpeeble/assets/89109803/0a476047-be99-4ebf-89d4-a8cd76968b32)
+
 ## Create function
 - use `/create` to start the character creation process
 - walks user through the process of creating a character for BREAK!! RPG
@@ -73,8 +89,7 @@ epoch = time.mktime(dt_obj.timetuple())
 ### Other Features
 - `/edit` can change the name or image of the character's profile
 - `/attack` generates a number from 1-20, allows for reroll and bonus options
-- `/profile` can view your character information
+- `/profile` can view your character information, accessing the sqlite3 backend to grab user's character information
+  - sub option to view another user's profile by pinging them (@user)
 - `/delete` prompts user to delete their character, asks them to confirm or cancel and has a timeout feature that will disable the buttons and cancel the procedure
-
-### Planned in the Future
-- `/info` with data from BREAK!! RPG so users can look up and view abilities for their calling
+- `/injury` allows user to roll on the game's injury table, generating a number with randint and a result with match case depending on the severity of the injury
