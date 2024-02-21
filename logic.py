@@ -1,4 +1,3 @@
-import discord
 from db.api.calling import get_calling
 from random import randint
 

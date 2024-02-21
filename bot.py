@@ -1,16 +1,16 @@
-from discord import Intents, Option, Embed, Colour, SelectOption
+from discord import Intents, Option, Embed, Colour
 import discord
 from discord.ext import commands
 from random import randint
 from datetime import datetime
 import time
 from protected import TOKEN, servers
-from logic import generate_stats, customized, apt_check, injury_table, specRoll
+from logic import generate_stats, apt_check, injury_table, specRoll
 from commands import abilityRankupCommand, scoreRankupCommand, myProfile
-from db.api.character import new_char, get_char, get_aptitude, edit_char, rank_up
+from db.api.character import new_char, get_char, get_aptitude, edit_char
 from db.api.graveyard import view_graveyard
-from db.api.ability import get_abilities, get_ability, get_char_abilities, get_species_abilities
-from db.api.character_ability import get_entries, new_entry
+from db.api.ability import get_abilities, get_species_abilities
+from db.api.character_ability import new_entry
 from views.DeleteView import DeleteView
 from views.ProfileView import ProfileView
 from views.CreateView import CreateView
@@ -21,6 +21,7 @@ intents.message_content = True
 
 bot = commands.Bot(intents=intents)
 
+# global information used across multiple commands
 callings = [
     'Factotum',
     'Sneak',
@@ -31,7 +32,6 @@ callings = [
     'Sage',
     'Heretic'
 ]
-
 apt_desc = {
     "Might": "Smash, crush, lift",
     "Deftness": "Dodge, sneak, leap",
@@ -39,6 +39,22 @@ apt_desc = {
     "Insight": "Notice, know, remember",
     "Aura": "Persuade, inspire, terrify"
 }
+aptitude_list = ['Might', 'Deftness', 'Grit', 'Insight', 'Aura']
+bonuses = ['Minor Bonus', 'Major Bonus', 'Minor Penalty', 'Major Penalty']
+reroll_type = ['Edge', 'Snag']
+species_list = [
+    'Human',
+    'Dimensional Stray',
+    'Chib',
+    'Tenebrate',
+    'Rai-Neko',
+    'Promethean',
+    'Gruun',
+    'Goblin',
+    'Dwarf',
+    'Elf',
+    'Bio-Mechanoid'
+]
 
 @bot.event
 async def on_ready():
@@ -58,31 +74,13 @@ async def create(
     calling: Option(str, required=True, choices=callings,
     description="Pick a calling from the list provided."), # type: ignore
     rank: Option(int, required=True, min_value=1, max_value=10), # type: ignore
-    species: Option(str, required=True, choices=[
-        'Human',
-        'Dimensional Stray',
-        'Chib',
-        'Tenebrate',
-        'Rai-Neko',
-        'Promethean',
-        'Gruun',
-        'Goblin',
-        'Dwarf',
-        'Elf',
-        'Bio-Mechaonoid'  
-    ],
+    species: Option(str, required=True, choices=species_list,
     description="Pick a species to play from the list provided."), # type: ignore
-    good_trait_1: Option(str, required=True, choices=[
-        'Might', 'Deftness', 'Grit', 'Insight', 'Aura'    
-    ],
+    good_trait_1: Option(str, required=True, choices=aptitude_list,
     description="Add a +1 to which trait?"), # type: ignore
-    good_trait_2: Option(str, required=True, choices=[
-        'Might', 'Deftness', 'Grit', 'Insight', 'Aura'    
-    ],
+    good_trait_2: Option(str, required=True, choices=aptitude_list,
     description="Add a +1 to which trait?"), # type: ignore
-    bad_trait: Option(str, required=True, choices=[
-        'Might', 'Deftness', 'Grit', 'Insight', 'Aura'    
-    ],
+    bad_trait: Option(str, required=True, choices=aptitude_list,
     description="Add a -1 to which trait?"), # type: ignore
     image: Option(str, required=False) # type: ignore
 ):
@@ -178,17 +176,17 @@ async def check(
     message,
     aptitude: Option(
         str, required=True, 
-        choices=['Might', 'Deftness', 'Grit', 'Insight', 'Aura'],
+        choices=aptitude_list,
         description="Choose an aptitude to compare to this check!"
     ), #type:ignore
     reroll: Option(
         str, required=False, 
-        choices=['Edge', 'Snag'],
+        choices=reroll_type,
         description="Optionally include an Edge/Snag."
     ), #type: ignore
     bonus: Option(
         str, required=False, 
-        choices=['Minor Bonus', 'Minor Penalty', 'Major Bonus', 'Major Penalty'],
+        choices=bonuses,
         description="Optionally include a bonus/penalty."
     ) #type:ignore
 ):
@@ -272,7 +270,7 @@ async def attack(
     ), #type:ignore
     reroll: Option(
         str, required=False, 
-        choices=['Edge', 'Snag'],
+        choices=reroll_type,
         description="Optionally include a bonus/penalty."
     ) #type:ignore
 ):
