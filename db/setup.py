@@ -11,6 +11,7 @@ cur.execute("DROP TABLE IF EXISTS abilities")
 cur.execute("DROP TABLE IF EXISTS character_abilities")
 cur.execute("DROP TABLE IF EXISTS quirks")
 cur.execute("DROP TABLE IF EXISTS character_quirk")
+cur.execute("DROP TABLE IF EXISTS game_mechs")
 
 for x in schemas:
     cur.execute(x)

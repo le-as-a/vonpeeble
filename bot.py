@@ -62,6 +62,28 @@ async def on_ready():
     
 @bot.slash_command(
     guild_ids=servers,
+    name="help",
+    description="A quick rundown of all the commands available on this bot."
+)
+async def help(
+    message
+):
+    helpEmbed = Embed(title="Von Peeble's Commands")
+    helpEmbed.add_field(name="/create", value="Create a character for BREAK!! (provided you don't already have one).", inline=False)
+    helpEmbed.add_field(name="/profile", value="View your created character's stats and abilities.", inline=False)
+    helpEmbed.add_field(name="/check", value="Roll an Aptitude check! Is also used in Contests.", inline=False)
+    helpEmbed.add_field(name="/attack", value="Roll an Attack roll.", inline=False)
+    helpEmbed.add_field(name="/rankup", value="Prompts you to level up ", inline=False)
+    helpEmbed.add_field(name="/edit", value="Allows you to edit your character's name or image.", inline=False)
+    helpEmbed.add_field(name="/delete", value="If you want to delete your character because they died or something. ):", inline=False)
+    helpEmbed.add_field(name="/graveyard", value="View the characters that have died in this game so far.", inline=False)
+    helpEmbed.add_field(name="/info", value="View information on Calling/Species Abilities or Character Quirks.", inline=False)
+    helpEmbed.add_field(name="/injury", value="Roll on the Injury table with 1-3 severity to determine your result.", inline=False)
+    
+    await message.respond(embed=helpEmbed)
+    
+@bot.slash_command(
+    guild_ids=servers,
     name="create",
     description="Create a new character!"
 )
@@ -73,7 +95,7 @@ async def create(
     ), # type: ignore
     calling: Option(str, required=True, choices=callings,
     description="Pick a calling from the list provided."), # type: ignore
-    rank: Option(int, required=True, min_value=1, max_value=10), # type: ignore
+    # rank: Option(int, required=True, min_value=1, max_value=10), # type: ignore
     species: Option(str, required=True, choices=species_list,
     description="Pick a species to play from the list provided."), # type: ignore
     good_trait_1: Option(str, required=True, choices=aptitude_list,
@@ -85,6 +107,7 @@ async def create(
     image: Option(str, required=False) # type: ignore
 ):
     user_id = message.author.id
+    rank = 1
     (
         might, 
         deftness, 
