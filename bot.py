@@ -4,7 +4,7 @@ from discord.ext import commands
 from random import randint
 from datetime import datetime
 import time
-from protected import TOKEN, servers, injury_table, specRoll
+from protected import TOKEN, servers, injury_table, specRoll, wpnInfo
 from logic import generate_stats, apt_check
 from commands import abilityRankupCommand, scoreRankupCommand, myProfile
 from db.api.character import new_char, get_char, get_aptitude, edit_char
@@ -275,19 +275,20 @@ async def attack(
             'Mighty',
             'Arc',
             'Lash',
+            'Drawn',
             'Thrown',
             'Mechanical (Small)',
             'Mechanical (Large)'
         ]
     ), #type:ignore
     bonus: Option(
-        int, required=False, min_value=-5, max_value=15,
-        description="Choose an aptitude to compare to this check!"
+        int, required=True, min_value=-5, max_value=15,
+        description="0 if no bonus is added to attack roll."
     ), #type:ignore
     reroll: Option(
         str, required=False, 
         choices=reroll_type,
-        description="Optionally include a bonus/penalty."
+        description="Optionally include an Edge/Snag."
     ) #type:ignore
 ):
     user_id = message.author.id
@@ -322,8 +323,8 @@ async def attack(
         result = f"{chosen+bonus} ({chosen} - {-bonus})"
     else:
         result = f"{chosen}"
-    
-    desc = f"## {char_name.title()} is attacking!\n{altered_roll}# {result}"
+    wpn_info = wpnInfo(wpn_type)
+    desc = f"## {char_name.title()} is attacking!\n{altered_roll}# {result}\n{wpn_info}"
     embed = Embed(
         title="",
         description=desc

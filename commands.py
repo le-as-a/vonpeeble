@@ -4,7 +4,8 @@ from db.api.ability import get_abilities, get_ability, get_char_abilities, get_m
 from db.api.character_ability import get_entries, new_entry
 from db.api.character import rank_up
 from views.RankupView import RankupView
-from logic import customized, generate_stats
+from logic import generate_stats
+from protected import customized
 
 def abilityRankupCommand(message, char_info):
     (
