@@ -4,8 +4,8 @@ from discord.ext import commands
 from random import randint
 from datetime import datetime
 import time
-from protected import TOKEN, servers
-from logic import generate_stats, apt_check, injury_table, specRoll
+from protected import TOKEN, servers, injury_table, specRoll
+from logic import generate_stats, apt_check
 from commands import abilityRankupCommand, scoreRankupCommand, myProfile
 from db.api.character import new_char, get_char, get_aptitude, edit_char
 from db.api.graveyard import view_graveyard
@@ -264,6 +264,22 @@ async def check(
 )
 async def attack(
     message,
+    wpn_type: Option(
+        str, required=True,
+        choices=[
+            'Unarmed',
+            'Standard',
+            'Concealed',
+            'Quick',
+            'Master',
+            'Mighty',
+            'Arc',
+            'Lash',
+            'Thrown',
+            'Mechanical (Small)',
+            'Mechanical (Large)'
+        ]
+    ), #type:ignore
     bonus: Option(
         int, required=False, min_value=-5, max_value=15,
         description="Choose an aptitude to compare to this check!"

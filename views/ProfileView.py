@@ -1,7 +1,7 @@
 import discord
 from discord import Embed, Colour, SelectOption
 from commands import myProfile, myAbilities
-from logic import customized, qColor, qImg
+from protected import customized, qColor, qImg
 from db.api.character_ability import get_entries
 from db.api.ability import get_char_abilities
 from db.api.character_quirk import get_char_quirk

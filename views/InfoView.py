@@ -1,7 +1,7 @@
 import discord
 from db.api.ability import get_abilities, get_all_species_abilities
 from db.api.quirk import get_all_quirks
-from logic import customized, qColor, qImg
+from protected import customized, qColor, qImg
 
 class InfoView(discord.ui.View):
     def __init__(self):

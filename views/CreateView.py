@@ -3,7 +3,7 @@ from db.api.quirk import get_all_quirks
 from db.api.character_quirk import new_char_quirk
 from db.api.character import del_char
 from db.api.character_ability import del_entries
-from logic import qColor, qImg
+from protected import qColor, qImg
 
 class CreateView(discord.ui.View):
     def __init__(self, user_id, char_name):
